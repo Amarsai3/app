@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register</title>
+    <style>
+        body { font-family: Arial; background: #f0fdf4; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .form-box { background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 0 10px #ccc; width: 300px; }
+        input, button { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #ccc; }
+        button { background-color: #10b981; color: white; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="form-box">
+        <h2>Register</h2>
+        <form method="POST">
+            <input name="username" placeholder="Username" required>
+            <input name="password" type="password" placeholder="Password" required>
+            <button>Register</button>
+        </form>
+        <p>Have an account? <a href="/login">Login</a></p>
+    </div>
+</body>
+</html>

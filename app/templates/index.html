@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat App</title>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            background: #f1f5f9;
+            padding: 2rem;
+        }
+        .container {
+            max-width: 700px;
+            margin: auto;
+            background: #fff;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 0 10px #d1d5db;
+        }
+        h1, h2, h3 {
+            color: #1e293b;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+        button {
+            background-color: #3b82f6;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button.delete {
+            background-color: #ef4444;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            background: #e2e8f0;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 6px;
+        }
+        .form-box {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome, {{ username }}!</h1>
+        <p><a href="/logout">Logout</a></p>
+
+        {% if joined_room %}
+            <h2>Chat Room: {{ joined_room }}</h2>
+            <ul id="messages"></ul>
+            <input id="message" placeholder="Type your message here..." autocomplete="off">
+            <button onclick="sendMessage()">Send</button>
+        {% else %}
+            <div class="form-box">
+                <h3>Create Room</h3>
+                <form method="POST" action="/create_room">
+                    <input name="room_name" placeholder="Room Name" required>
+                    <input name="pin" placeholder="PIN" required>
+                    <button>Create Room</button>
+                </form>
+            </div>
+
+            <div class="form-box">
+                <h3>Join Room</h3>
+                <form method="POST" action="/join_room">
+                    <input name="room_name" placeholder="Room Name" required>
+                    <input name="pin" placeholder="PIN" required>
+                    <button>Join Room</button>
+                </form>
+            </div>
+
+            <div class="form-box">
+                <h3>Delete Room</h3>
+                <form method="POST" action="/delete_room">
+                    <input name="room_name" placeholder="Room Name" required>
+                    <input name="pin" placeholder="PIN" required>
+                    <button class="delete">Delete Room</button>
+                </form>
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        const socket = io();
+
+        {% if joined_room %}
+        window.onload = () => {
+            socket.emit("join", { room: "{{ joined_room }}" });
+        };
+
+        function sendMessage() {
+            const messageInput = document.getElementById("message");
+            const message = messageInput.value;
+            if (message.trim() !== "") {
+                socket.emit("send_message", {
+                    username: "{{ username }}",
+                    room: "{{ joined_room }}",
+                    message: message
+                });
+                messageInput.value = "";
+            }
+        }
+
+        socket.on("receive_message", function(data) {
+            const messages = document.getElementById("messages");
+            const li = document.createElement("li");
+            li.textContent = `${data.username}: ${data.message}`;
+            messages.appendChild(li);
+        });
+        {% endif %}
+    </script>
+</body>
+</html>
